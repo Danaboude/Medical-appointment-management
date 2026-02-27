@@ -1,0 +1,72 @@
+name: clinc
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  provider: ^6.1.2
+  sqflite: ^2.3.3+1
+  sqflite_common_ffi: ^2.3.3
+  path_provider: ^2.1.5
+  fl_chart: ^0.68.0
+  table_calendar: ^3.1.2
+  cupertino_icons: ^1.0.6
+  shared_preferences: ^2.2.3
+  flutter_gen: ^5.11.0
+  image_picker: ^1.2.0
+  flutter_launcher_icons: ^0.13.1
+  share_plus: ^11.1.0
+  permission_handler: ^12.0.1
+  file_picker: ^10.3.2
+  dropdown_search: ^5.0.6
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  open_file: ^3.5.10
+  url_launcher: ^6.3.2
+  teeth_selector: ^0.2.2
+  path: ^1.9.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/data/
+    - assets/
+    - assets/wallpaper.png
+    - assets/fonts/Amiri-Regular.ttf
+    - assets/fonts/Amiri-Bold.ttf
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Tajawal-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Tajawal-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Tajawal-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Tajawal-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Tajawal-Medium.ttf
+          weight: 500
+flutter_icons:
+  android: true
+  ios: true
+  windows:
+    generate: true
+  image_path: "assets/appicon.png"   # Path to your icon image
+  adaptive_icon_background: "#ffffff"      # (Optional for Android adaptive icons)
