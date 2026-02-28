@@ -16,6 +16,7 @@ import 'providers/expense_provider.dart';
 import 'providers/laboratory_provider.dart';
 
 import 'screens/main_screen.dart';
+import 'screens/password_gate_screen.dart';
 
 void main() async {
   // Initialize FFI for desktop platforms
@@ -65,10 +66,35 @@ class MyApp extends StatelessWidget {
                 Locale('en', ''), // English
               Locale('ar', ''), // Arabic
             ],
-            home: const MainScreen(),
+            home: const _AppGate(),
           );
         },
       ),
+    );
+  }
+}
+
+class _AppGate extends StatefulWidget {
+  const _AppGate();
+
+  @override
+  State<_AppGate> createState() => _AppGateState();
+}
+
+class _AppGateState extends State<_AppGate> {
+  bool _authenticated = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_authenticated) {
+      return const MainScreen();
+    }
+    return PasswordGateScreen(
+      onAuthenticated: () {
+        setState(() {
+          _authenticated = true;
+        });
+      },
     );
   }
 }

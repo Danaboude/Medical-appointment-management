@@ -1603,6 +1603,138 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الرجاء إدخال رقم صحيح موجب'**
   String get pleaseEnterValidPositiveNumber;
+
+  /// No description provided for @security.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأمان'**
+  String get security;
+
+  /// No description provided for @password.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور'**
+  String get password;
+
+  /// No description provided for @createPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء كلمة مرور'**
+  String get createPassword;
+
+  /// No description provided for @createPasswordSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'قم بتعيين كلمة مرور لحماية بيانات العيادة'**
+  String get createPasswordSubtitle;
+
+  /// No description provided for @createPasswordButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء كلمة المرور'**
+  String get createPasswordButton;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرحباً بعودتك'**
+  String get enterPassword;
+
+  /// No description provided for @enterPasswordSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل كلمة المرور لفتح التطبيق'**
+  String get enterPasswordSubtitle;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد كلمة المرور'**
+  String get confirmPassword;
+
+  /// No description provided for @pleaseEnterPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرجاء إدخال كلمة المرور'**
+  String get pleaseEnterPassword;
+
+  /// No description provided for @pleaseConfirmPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرجاء تأكيد كلمة المرور'**
+  String get pleaseConfirmPassword;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمتا المرور غير متطابقتين'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب أن تكون كلمة المرور 4 أحرف على الأقل'**
+  String get passwordTooShort;
+
+  /// No description provided for @incorrectPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور غير صحيحة'**
+  String get incorrectPassword;
+
+  /// No description provided for @unlock.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتح'**
+  String get unlock;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير كلمة المرور'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديث كلمة مرور التطبيق'**
+  String get changePasswordSubtitle;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور الحالية'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور الجديدة'**
+  String get newPassword;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تغيير كلمة المرور بنجاح'**
+  String get passwordChanged;
+
+  /// No description provided for @verifyPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحقق من كلمة المرور'**
+  String get verifyPassword;
+
+  /// No description provided for @verify.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحقق'**
+  String get verify;
+
+  /// No description provided for @createNewPasswordAfterReset.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إعادة تعيين بيانات التطبيق. الرجاء إنشاء كلمة مرور جديدة.'**
+  String get createNewPasswordAfterReset;
 }
 
 class _AppLocalizationsDelegate

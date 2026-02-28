@@ -14,6 +14,7 @@ import '../providers/patient_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/treatment_provider.dart';
 import '../services/database_service.dart';
+import '../services/password_service.dart';
 import '../services/random_data_generator.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -141,6 +142,10 @@ class SettingsScreen extends StatelessWidget {
   void _resetApp(BuildContext context) async {
     final appLocalizations = AppLocalizations.of(context)!;
 
+    // First verify the current password
+    final passwordVerified = await _verifyCurrentPassword(context);
+    if (passwordVerified != true) return;
+
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -161,6 +166,7 @@ class SettingsScreen extends StatelessWidget {
     );
 
     if (confirmed != true) return;
+    if (!context.mounted) return;
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -168,6 +174,8 @@ class SettingsScreen extends StatelessWidget {
 
     try {
       await DatabaseService().clearDatabase();
+      // Clear the old password
+      await PasswordService.clearPassword();
 
       // Reload all data after clearing
       await Future.wait([
@@ -180,12 +188,18 @@ class SettingsScreen extends StatelessWidget {
         Provider.of<ExpenseProvider>(context, listen: false).fetchExpenses(),
       ]);
 
+      if (!context.mounted) return;
+
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
           SnackBar(content: Text(appLocalizations.resetAppSuccess)),
         );
+
+      // Ask the user to create a new password
+      await _showCreateNewPasswordDialog(context);
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
@@ -219,6 +233,21 @@ class SettingsScreen extends StatelessWidget {
                     _buildLanguageTile(context, appLocalizations),
                     const Divider(height: 1),
                     _buildThemeTile(context, appLocalizations),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildSectionTitle(context, appLocalizations.security),
+              const SizedBox(height: 8),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.lock_outline),
+                      title: Text(appLocalizations.changePassword),
+                      subtitle: Text(appLocalizations.changePasswordSubtitle),
+                      onTap: () => _showChangePasswordDialog(context),
+                    ),
                   ],
                 ),
               ),
@@ -418,6 +447,320 @@ class SettingsScreen extends StatelessWidget {
                   Text('${appLocalizations.testDataError}: $result')),
         );
     }
+  }
+
+  /// Verifies the current password via a dialog. Returns true if verified.
+  Future<bool?> _verifyCurrentPassword(BuildContext context) async {
+    final appLocalizations = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+    bool obscure = true;
+    String? error;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(appLocalizations.verifyPassword),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: controller,
+                    obscureText: obscure,
+                    decoration: InputDecoration(
+                      labelText: appLocalizations.currentPassword,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(obscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined),
+                        onPressed: () => setState(() => obscure = !obscure),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      errorText: error,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(appLocalizations.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final valid = await PasswordService.verifyPassword(
+                        controller.text);
+                    if (valid) {
+                      Navigator.pop(dialogContext, true);
+                    } else {
+                      setState(() {
+                        error = appLocalizations.incorrectPassword;
+                      });
+                    }
+                  },
+                  child: Text(appLocalizations.verify),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// Shows a dialog to change the password (current → new + confirm).
+  void _showChangePasswordDialog(BuildContext context) async {
+    final appLocalizations = AppLocalizations.of(context)!;
+    final currentController = TextEditingController();
+    final newController = TextEditingController();
+    final confirmController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool obscureCurrent = true;
+    bool obscureNew = true;
+    bool obscureConfirm = true;
+    String? currentError;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(appLocalizations.changePassword),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: currentController,
+                      obscureText: obscureCurrent,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.currentPassword,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(obscureCurrent
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
+                          onPressed: () =>
+                              setState(() => obscureCurrent = !obscureCurrent),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        errorText: currentError,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return appLocalizations.pleaseEnterPassword;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: newController,
+                      obscureText: obscureNew,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.newPassword,
+                        prefixIcon: const Icon(Icons.lock_reset_outlined),
+                        suffixIcon: IconButton(
+                          icon: Icon(obscureNew
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
+                          onPressed: () =>
+                              setState(() => obscureNew = !obscureNew),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return appLocalizations.pleaseEnterPassword;
+                        }
+                        if (value.length < 4) {
+                          return appLocalizations.passwordTooShort;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: confirmController,
+                      obscureText: obscureConfirm,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.confirmPassword,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(obscureConfirm
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
+                          onPressed: () =>
+                              setState(() => obscureConfirm = !obscureConfirm),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return appLocalizations.pleaseConfirmPassword;
+                        }
+                        if (value != newController.text) {
+                          return appLocalizations.passwordsDoNotMatch;
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(appLocalizations.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Clear previous error
+                    setState(() => currentError = null);
+
+                    if (!formKey.currentState!.validate()) return;
+
+                    final valid = await PasswordService.verifyPassword(
+                        currentController.text);
+                    if (!valid) {
+                      setState(() {
+                        currentError = appLocalizations.incorrectPassword;
+                      });
+                      return;
+                    }
+
+                    await PasswordService.savePassword(newController.text);
+                    Navigator.pop(dialogContext, true);
+                  },
+                  child: Text(appLocalizations.save),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (!context.mounted) return;
+    if (result == true) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(appLocalizations.passwordChanged)),
+        );
+    }
+  }
+
+  /// Shows a dialog to create a new password (after reset).
+  Future<void> _showCreateNewPasswordDialog(BuildContext context) async {
+    final appLocalizations = AppLocalizations.of(context)!;
+    final newController = TextEditingController();
+    final confirmController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool obscureNew = true;
+    bool obscureConfirm = true;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(appLocalizations.createPassword),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(appLocalizations.createNewPasswordAfterReset),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: newController,
+                      obscureText: obscureNew,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.newPassword,
+                        prefixIcon: const Icon(Icons.lock_reset_outlined),
+                        suffixIcon: IconButton(
+                          icon: Icon(obscureNew
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
+                          onPressed: () =>
+                              setState(() => obscureNew = !obscureNew),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return appLocalizations.pleaseEnterPassword;
+                        }
+                        if (value.length < 4) {
+                          return appLocalizations.passwordTooShort;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: confirmController,
+                      obscureText: obscureConfirm,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.confirmPassword,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(obscureConfirm
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
+                          onPressed: () =>
+                              setState(() => obscureConfirm = !obscureConfirm),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return appLocalizations.pleaseConfirmPassword;
+                        }
+                        if (value != newController.text) {
+                          return appLocalizations.passwordsDoNotMatch;
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) return;
+                    await PasswordService.savePassword(newController.text);
+                    Navigator.pop(dialogContext);
+                  },
+                  child: Text(appLocalizations.createPasswordButton),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {

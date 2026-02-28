@@ -777,4 +777,72 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pleaseEnterValidPositiveNumber =>
       'Please enter a valid positive number';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get createPassword => 'Create Password';
+
+  @override
+  String get createPasswordSubtitle =>
+      'Set a password to protect your clinic data';
+
+  @override
+  String get createPasswordButton => 'Create Password';
+
+  @override
+  String get enterPassword => 'Welcome Back';
+
+  @override
+  String get enterPasswordSubtitle => 'Enter your password to unlock the app';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get pleaseEnterPassword => 'Please enter a password';
+
+  @override
+  String get pleaseConfirmPassword => 'Please confirm your password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 4 characters';
+
+  @override
+  String get incorrectPassword => 'Incorrect password';
+
+  @override
+  String get unlock => 'Unlock';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get changePasswordSubtitle => 'Update your app password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get passwordChanged => 'Password changed successfully';
+
+  @override
+  String get verifyPassword => 'Verify Password';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get createNewPasswordAfterReset =>
+      'App data has been reset. Please create a new password.';
 }

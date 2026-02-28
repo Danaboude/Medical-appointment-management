@@ -773,4 +773,72 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseEnterValidPositiveNumber => 'الرجاء إدخال رقم صحيح موجب';
+
+  @override
+  String get security => 'الأمان';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get createPassword => 'إنشاء كلمة مرور';
+
+  @override
+  String get createPasswordSubtitle =>
+      'قم بتعيين كلمة مرور لحماية بيانات العيادة';
+
+  @override
+  String get createPasswordButton => 'إنشاء كلمة المرور';
+
+  @override
+  String get enterPassword => 'مرحباً بعودتك';
+
+  @override
+  String get enterPasswordSubtitle => 'أدخل كلمة المرور لفتح التطبيق';
+
+  @override
+  String get confirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get pleaseEnterPassword => 'الرجاء إدخال كلمة المرور';
+
+  @override
+  String get pleaseConfirmPassword => 'الرجاء تأكيد كلمة المرور';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get passwordTooShort => 'يجب أن تكون كلمة المرور 4 أحرف على الأقل';
+
+  @override
+  String get incorrectPassword => 'كلمة المرور غير صحيحة';
+
+  @override
+  String get unlock => 'فتح';
+
+  @override
+  String get changePassword => 'تغيير كلمة المرور';
+
+  @override
+  String get changePasswordSubtitle => 'تحديث كلمة مرور التطبيق';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get passwordChanged => 'تم تغيير كلمة المرور بنجاح';
+
+  @override
+  String get verifyPassword => 'التحقق من كلمة المرور';
+
+  @override
+  String get verify => 'تحقق';
+
+  @override
+  String get createNewPasswordAfterReset =>
+      'تم إعادة تعيين بيانات التطبيق. الرجاء إنشاء كلمة مرور جديدة.';
 }
