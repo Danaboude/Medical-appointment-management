@@ -7,10 +7,10 @@
   "invoices": "الفواتير",
   "more": "المزيد",
   "dashboard": "لوحة التحكم",
-  "amountMustBePositive":"يجب أن يكون المبلغ أكبر من الصفر",
+  "amountMustBePositive": "يجب أن يكون المبلغ أكبر من الصفر",
   "editPayment": "تعديل الدفعة",
   "errorUpdatingPayment": "خطأ في تحديث الدفعة",
-  "paymentDate":"تاريخ الدفع",
+  "paymentDate": "تاريخ الدفع",
   "delete": "حذف",
   "appointmentConflictMessage": "يوجد موعد في نفس الوقت مع المريض:",
   "patientsCount": "عدد المرضى",
@@ -217,5 +217,38 @@
   "severity": "الخطورة",
   "recommendation": "التوصية",
   "medicalAdviceSummary": "ملخص النصيحة الطبية",
-  "noSummaryAvailable": "لا يوجد ملخص متاح"
+  "noSummaryAvailable": "لا يوجد ملخص متاح",
+  "financialSummary": "الملخص المالي",
+  "totalExpensesLabel": "إجمالي المصاريف",
+  "totalProfits": "إجمالي الأرباح",
+  "confidence": "ثقة",
+  "appointmentOn": "موعد في {date}",
+  "@appointmentOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "totalLabel": "الإجمالي",
+  "costs": "تكاليف",
+  "costsCannotExceedAgreed": "التكاليف لا يمكن أن تكون أكبر من المبلغ المتفق عليه",
+  "labName": "اسم المخبر",
+  "genderMale": "ذكر",
+  "genderFemale": "أنثى",
+  "maritalSingle": "أعزب",
+  "maritalMarried": "متزوج",
+  "maritalDivorced": "مطلق",
+  "maritalWidowed": "أرمل",
+  "statusBooked": "محجوز",
+  "statusCancelled": "ملغي",
+  "statusCompleted": "منجز",
+  "statusInProgress": "قيد التنفيذ",
+  "statusFollowUp": "متابعة",
+  "invoiceStatusDraft": "مسودة",
+  "invoiceStatusPartiallyPaid": "مدفوعة جزئياً",
+  "invoiceStatusFullyPaid": "مدفوعة بالكامل",
+  "paymentCash": "نقدي",
+  "paymentCard": "بطاقة",
+  "paymentTransfer": "تحويل"
 }

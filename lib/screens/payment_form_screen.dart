@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/payment.dart';
 import '../providers/invoice_provider.dart';
 
@@ -159,7 +160,7 @@ class _PaymentFormScreenState extends State<PaymentFormScreen> {
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text(getLocalizedPaymentMethod(value, appLocalizations)),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {

@@ -146,7 +146,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
-                              'Total: $formattedTotal',
+                              '${appLocalizations.totalLabel}: $formattedTotal',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.primary,

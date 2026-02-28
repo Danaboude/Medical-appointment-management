@@ -210,6 +210,18 @@ class SettingsScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
+              _buildSectionTitle(context, appLocalizations.displaySettings),
+              const SizedBox(height: 8),
+              Card(
+                child: Column(
+                  children: [
+                    _buildLanguageTile(context, appLocalizations),
+                    const Divider(height: 1),
+                    _buildThemeTile(context, appLocalizations),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               _buildSectionTitle(context, appLocalizations.dataManagement),
               const SizedBox(height: 8),
               Card(

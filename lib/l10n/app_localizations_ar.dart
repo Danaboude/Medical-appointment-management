@@ -649,4 +649,85 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noSummaryAvailable => 'لا يوجد ملخص متاح';
+
+  @override
+  String get financialSummary => 'الملخص المالي';
+
+  @override
+  String get totalExpensesLabel => 'إجمالي المصاريف';
+
+  @override
+  String get totalProfits => 'إجمالي الأرباح';
+
+  @override
+  String get confidence => 'ثقة';
+
+  @override
+  String appointmentOn(String date) {
+    return 'موعد في $date';
+  }
+
+  @override
+  String get totalLabel => 'الإجمالي';
+
+  @override
+  String get costs => 'تكاليف';
+
+  @override
+  String get costsCannotExceedAgreed =>
+      'التكاليف لا يمكن أن تكون أكبر من المبلغ المتفق عليه';
+
+  @override
+  String get labName => 'اسم المخبر';
+
+  @override
+  String get genderMale => 'ذكر';
+
+  @override
+  String get genderFemale => 'أنثى';
+
+  @override
+  String get maritalSingle => 'أعزب';
+
+  @override
+  String get maritalMarried => 'متزوج';
+
+  @override
+  String get maritalDivorced => 'مطلق';
+
+  @override
+  String get maritalWidowed => 'أرمل';
+
+  @override
+  String get statusBooked => 'محجوز';
+
+  @override
+  String get statusCancelled => 'ملغي';
+
+  @override
+  String get statusCompleted => 'منجز';
+
+  @override
+  String get statusInProgress => 'قيد التنفيذ';
+
+  @override
+  String get statusFollowUp => 'متابعة';
+
+  @override
+  String get invoiceStatusDraft => 'مسودة';
+
+  @override
+  String get invoiceStatusPartiallyPaid => 'مدفوعة جزئياً';
+
+  @override
+  String get invoiceStatusFullyPaid => 'مدفوعة بالكامل';
+
+  @override
+  String get paymentCash => 'نقدي';
+
+  @override
+  String get paymentCard => 'بطاقة';
+
+  @override
+  String get paymentTransfer => 'تحويل';
 }

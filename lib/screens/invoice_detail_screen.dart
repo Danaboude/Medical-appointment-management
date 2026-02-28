@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:clinc/services/pdf_invoice_service.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/invoice.dart';
 import '../models/payment.dart';
 import '../providers/invoice_provider.dart';
@@ -222,7 +223,7 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
                           .format(DateTime.parse(widget.invoice.invoiceDate))),
                   const SizedBox(height: 8),
                   _buildDetailRow(context, Icons.receipt_long_outlined,
-                      appLocalizations.status, widget.invoice.status),
+                      appLocalizations.status, getLocalizedInvoiceStatus(widget.invoice.status, appLocalizations)),
                   const SizedBox(height: 16),
                   const Divider(),
                   const SizedBox(height: 16),
@@ -577,7 +578,7 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(payment.method),
+            Text(getLocalizedPaymentMethod(payment.method, appLocalizations)),
             const SizedBox(width: 8),
             IconButton(
               icon: const Icon(Icons.edit_outlined),
@@ -592,13 +593,16 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
   }
 
   IconData _getPaymentMethodIcon(String method) {
-    switch (method.toLowerCase()) {
+    switch (method) {
+      case 'نقدي':
       case 'cash':
       case 'نقداً':
         return Icons.money_outlined;
+      case 'بطاقة':
       case 'credit card':
       case 'بطاقة ائتمان':
         return Icons.credit_card_outlined;
+      case 'تحويل':
       case 'bank transfer':
       case 'تحويل بنكي':
         return Icons.account_balance_outlined;

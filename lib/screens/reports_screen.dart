@@ -391,6 +391,8 @@ class ReportsScreen extends StatelessWidget {
         return l10n.expenseCategorySalaries;
       case 'medical_supplies':
         return l10n.expenseCategoryMedicalSupplies;
+      case 'patient_expenses':
+        return l10n.patientExpenses;
       case 'other':
       default:
         return l10n.expenseCategoryOther;

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/appointment.dart';
 import '../models/patient.dart';
 import '../providers/appointment_provider.dart';
@@ -281,7 +282,7 @@ class _AppointmentFormScreenState extends State<AppointmentFormScreen> {
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value),
+                        child: Text(getLocalizedAppointmentStatus(value, appLocalizations)),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {

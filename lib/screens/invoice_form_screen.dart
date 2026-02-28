@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/invoice.dart';
 import '../models/patient.dart';
 import '../providers/invoice_provider.dart';
@@ -311,7 +312,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               .map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value),
+              child: Text(getLocalizedInvoiceStatus(value, appLocalizations)),
             );
           }).toList(),
           onChanged: (String? newValue) {

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/invoice.dart';
 import '../providers/invoice_provider.dart';
 import 'invoice_detail_screen.dart';
@@ -178,7 +179,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Chip(
-                        label: Text(invoice.status),
+                        label: Text(getLocalizedInvoiceStatus(invoice.status, appLocalizations)),
                         backgroundColor:
                             _getStatusColor(context, invoice.status)
                                 .withOpacity(0.2),
@@ -304,7 +305,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                       symbol: appLocalizations.currencySymbol,
                     ).format(invoice.totalAmount ?? 0))),
                     DataCell(Chip(
-                      label: Text(invoice.status),
+                      label: Text(getLocalizedInvoiceStatus(invoice.status, appLocalizations)),
                       backgroundColor: _getStatusColor(context, invoice.status)
                           .withOpacity(0.2),
                       padding: const EdgeInsets.symmetric(

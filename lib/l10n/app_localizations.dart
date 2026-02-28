@@ -1363,6 +1363,162 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لا يوجد ملخص متاح'**
   String get noSummaryAvailable;
+
+  /// No description provided for @financialSummary.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملخص المالي'**
+  String get financialSummary;
+
+  /// No description provided for @totalExpensesLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي المصاريف'**
+  String get totalExpensesLabel;
+
+  /// No description provided for @totalProfits.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي الأرباح'**
+  String get totalProfits;
+
+  /// No description provided for @confidence.
+  ///
+  /// In ar, this message translates to:
+  /// **'ثقة'**
+  String get confidence;
+
+  /// No description provided for @appointmentOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'موعد في {date}'**
+  String appointmentOn(String date);
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإجمالي'**
+  String get totalLabel;
+
+  /// No description provided for @costs.
+  ///
+  /// In ar, this message translates to:
+  /// **'تكاليف'**
+  String get costs;
+
+  /// No description provided for @costsCannotExceedAgreed.
+  ///
+  /// In ar, this message translates to:
+  /// **'التكاليف لا يمكن أن تكون أكبر من المبلغ المتفق عليه'**
+  String get costsCannotExceedAgreed;
+
+  /// No description provided for @labName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المخبر'**
+  String get labName;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In ar, this message translates to:
+  /// **'ذكر'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنثى'**
+  String get genderFemale;
+
+  /// No description provided for @maritalSingle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعزب'**
+  String get maritalSingle;
+
+  /// No description provided for @maritalMarried.
+  ///
+  /// In ar, this message translates to:
+  /// **'متزوج'**
+  String get maritalMarried;
+
+  /// No description provided for @maritalDivorced.
+  ///
+  /// In ar, this message translates to:
+  /// **'مطلق'**
+  String get maritalDivorced;
+
+  /// No description provided for @maritalWidowed.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرمل'**
+  String get maritalWidowed;
+
+  /// No description provided for @statusBooked.
+  ///
+  /// In ar, this message translates to:
+  /// **'محجوز'**
+  String get statusBooked;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغي'**
+  String get statusCancelled;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'منجز'**
+  String get statusCompleted;
+
+  /// No description provided for @statusInProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد التنفيذ'**
+  String get statusInProgress;
+
+  /// No description provided for @statusFollowUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة'**
+  String get statusFollowUp;
+
+  /// No description provided for @invoiceStatusDraft.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسودة'**
+  String get invoiceStatusDraft;
+
+  /// No description provided for @invoiceStatusPartiallyPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدفوعة جزئياً'**
+  String get invoiceStatusPartiallyPaid;
+
+  /// No description provided for @invoiceStatusFullyPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدفوعة بالكامل'**
+  String get invoiceStatusFullyPaid;
+
+  /// No description provided for @paymentCash.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقدي'**
+  String get paymentCash;
+
+  /// No description provided for @paymentCard.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطاقة'**
+  String get paymentCard;
+
+  /// No description provided for @paymentTransfer.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحويل'**
+  String get paymentTransfer;
 }
 
 class _AppLocalizationsDelegate

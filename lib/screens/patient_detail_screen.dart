@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/patient.dart';
 import '../providers/appointment_provider.dart';
 import '../providers/invoice_provider.dart';
@@ -145,7 +146,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
         child: ListView(
           children: [
             Text(
-              "الملخص المالي",
+              appLocalizations.financialSummary,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
@@ -155,7 +156,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
             _buildDetailRow(
               context,
               Icons.trending_down,
-              "إجمالي المصاريف",
+              appLocalizations.totalExpensesLabel,
               NumberFormat.currency(
                       locale: appLocalizations.localeName,
                       symbol: appLocalizations.currencySymbol)
@@ -164,7 +165,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
             _buildDetailRow(
               context,
               Icons.trending_up,
-              "إجمالي الأرباح",
+              appLocalizations.totalProfits,
               NumberFormat.currency(
                       locale: appLocalizations.localeName,
                       symbol: appLocalizations.currencySymbol)
@@ -186,12 +187,12 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
             _buildDetailRow(context, Icons.cake_outlined,
                 appLocalizations.age, widget.patient.age?.toString()),
             _buildDetailRow(context, Icons.person_outline,
-                appLocalizations.gender, widget.patient.gender),
+                appLocalizations.gender, widget.patient.gender != null ? getLocalizedGender(widget.patient.gender!, appLocalizations) : null),
             _buildDetailRow(
                 context,
                 Icons.favorite_border,
                 appLocalizations.maritalStatus,
-                widget.patient.maritalStatus),
+                widget.patient.maritalStatus != null ? getLocalizedMaritalStatus(widget.patient.maritalStatus!, appLocalizations) : null),
             _buildDetailRow(context, Icons.home_outlined,
                 appLocalizations.address, widget.patient.address),
             _buildDetailRow(
@@ -367,7 +368,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '• ${finding.area}: ${finding.issue} (${(finding.confidence * 100).toStringAsFixed(0)}% confidence)',
+                            '• ${finding.area}: ${finding.issue} (${(finding.confidence * 100).toStringAsFixed(0)}% ${appLocalizations.confidence})',
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                           if (finding.severity != null && finding.severity!.isNotEmpty)
@@ -610,7 +611,7 @@ class _TreatmentsTab extends _BasePatientTab<Treatment> {
       child: ListTile(
         title: Text(treatment.diagnosis ?? appLocalizations.noDiagnosis),
         subtitle: Text(
-            '${appLocalizations.date}: ${DateFormat.yMd(appLocalizations.localeName).format(DateTime.parse(treatment.treatmentDate))} - ${appLocalizations.status}: ${treatment.status}'),
+            '${appLocalizations.date}: ${DateFormat.yMd(appLocalizations.localeName).format(DateTime.parse(treatment.treatmentDate))} - ${appLocalizations.status}: ${getLocalizedTreatmentStatus(treatment.status, appLocalizations)}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -843,9 +844,9 @@ class _AppointmentsTab extends _BasePatientTab<Appointment> {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         title: Text(
-            '${appLocalizations.appointment} on ${DateFormat.yMd(appLocalizations.localeName).format(DateTime.parse(appointment.appointmentDate))}'),
+            appLocalizations.appointmentOn(DateFormat.yMd(appLocalizations.localeName).format(DateTime.parse(appointment.appointmentDate)))),
         subtitle: Text(
-            '${appLocalizations.time}: ${DateFormat.jm(appLocalizations.localeName).format(DateTime.parse(appointment.appointmentDate))} - ${appLocalizations.status}: ${appointment.status}'),
+            '${appLocalizations.time}: ${DateFormat.jm(appLocalizations.localeName).format(DateTime.parse(appointment.appointmentDate))} - ${appLocalizations.status}: ${getLocalizedAppointmentStatus(appointment.status, appLocalizations)}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:teeth_selector/teeth_selector.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/patient.dart';
 import '../models/treatment.dart';
 import '../providers/patient_provider.dart';
@@ -346,7 +347,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                         child: TextFormField(
                           controller: _expensesController,
                           decoration:
-                              _inputDecoration('تكاليف', context),
+                              _inputDecoration(appLocalizations.costs, context),
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
                           validator: (value) {
@@ -360,7 +361,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                                   double.tryParse(_agreedAmountController.text);
 
                               if (agreedAmount != null && expenses > agreedAmount) {
-                                return 'التكاليف لا يمكن أن تكون أكبر من المبلغ المتفق عليه';
+                                return appLocalizations.costsCannotExceedAgreed;
                               }
                             }
                             return null;
@@ -372,7 +373,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                         child: TextFormField(
                           controller: _laboratoryNameController,
                           decoration: _inputDecoration(
-                              'اسم المخبر', context),
+                              appLocalizations.labName, context),
                         ),
                       ),
                     ],
@@ -389,7 +390,7 @@ class _TreatmentFormScreenState extends State<TreatmentFormScreen> {
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text(getLocalizedTreatmentStatus(value, appLocalizations)),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {

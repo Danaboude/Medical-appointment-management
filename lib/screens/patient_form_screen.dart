@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localization_helpers.dart';
 import '../models/patient.dart';
 import '../providers/patient_provider.dart';
 
@@ -182,7 +183,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text(getLocalizedGender(value, appLocalizations)),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {
@@ -203,7 +204,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value),
+                        child: Text(getLocalizedMaritalStatus(value, appLocalizations)),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
