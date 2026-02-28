@@ -184,123 +184,59 @@ class _PatientsScreenState extends State<PatientsScreen> {
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-                minWidth: constraints.maxWidth - 32.0),
-            child: DataTable(
-              showCheckboxColumn: false,
-              columnSpacing: 20,
-              horizontalMargin: 16,
-              dataRowHeight: 56,
-              headingRowHeight: 56,
-              headingRowColor: MaterialStateProperty.all(
-                  colorScheme.primary.withOpacity(0.05)),
-              dividerThickness: 1,
-              columns: [
-                DataColumn(
-                    label: Expanded(
-                        child: Text(appLocalizations.name,
-                            style: theme.textTheme.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.bold))),
-                    columnWidth: const FlexColumnWidth(2)),
-                DataColumn(
-                    label: Expanded(
-                        child: Text(appLocalizations.fileNumber,
-                            style: theme.textTheme.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.bold))),
-                    columnWidth: const FlexColumnWidth(1.5)),
-                DataColumn(
-                    label: Expanded(
-                        child: Text(appLocalizations.phone,
-                            style: theme.textTheme.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.bold))),
-                    columnWidth: const FlexColumnWidth(2)),
-                DataColumn(
-                    label: Expanded(
-                        child: Center(
-                            child: Text(appLocalizations.actions,
-                                style: theme.textTheme.titleSmall
-                                    ?.copyWith(fontWeight: FontWeight.bold)))),
-                    columnWidth: const FixedColumnWidth(140)),
-              ],
-              rows: List.generate(patients.length, (index) {
-                final patient = patients[index];
-                return DataRow(
-                  color: MaterialStateProperty.resolveWith<Color?>((states) {
-                    if (states.contains(MaterialState.selected)) {
-                      return colorScheme.primary.withOpacity(0.15);
-                    }
-                    if (states.contains(MaterialState.hovered)) {
-                      return colorScheme.primary.withOpacity(0.08);
-                    }
-                    return index.isEven
-                        ? Colors.transparent
-                        : colorScheme.surface.withAlpha(10);
-                  }),
-                  onSelectChanged: (isSelected) {
-                    if (isSelected ?? false) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                PatientDetailScreen(patient: patient)),
-                      );
-                    }
-                  },
-                  cells: [
-                    DataCell(
-                        Text(patient.name, style: theme.textTheme.bodyMedium)),
-                    DataCell(Text(patient.fileNumber,
-                        style: theme.textTheme.bodyMedium)),
-                    DataCell(Text(patient.phone ?? appLocalizations.na,
-                        style: theme.textTheme.bodyMedium)),
-                    DataCell(
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.visibility_outlined, size: 20),
-                            tooltip: appLocalizations.viewPatient,
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PatientDetailScreen(patient: patient))),
-                          ),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.edit_outlined, size: 20),
-                            tooltip: appLocalizations.editPatientTitle,
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PatientFormScreen(patient: patient))),
-                          ),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.delete_outline, size: 20),
-                            tooltip: appLocalizations.delete,
-                            onPressed: () =>
-                                _showDeleteConfirmationDialog(context, patient),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              }),
+          child: PaginatedDataTable(
+            showCheckboxColumn: false,
+            columnSpacing: 20,
+            horizontalMargin: 16,
+            dataRowMaxHeight: 56,
+            headingRowHeight: 56,
+            rowsPerPage: 20,
+            showFirstLastButtons: true,
+            columns: [
+              DataColumn(
+                  label: Expanded(
+                      child: Text(appLocalizations.name,
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold)))),
+              DataColumn(
+                  label: Expanded(
+                      child: Text(appLocalizations.fileNumber,
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold)))),
+              DataColumn(
+                  label: Expanded(
+                      child: Text(appLocalizations.phone,
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold)))),
+              DataColumn(
+                  label: Expanded(
+                      child: Center(
+                          child: Text(appLocalizations.actions,
+                              style: theme.textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold))))),
+            ],
+            source: _PatientDataSource(
+              patients: patients,
+              theme: theme,
+              colorScheme: colorScheme,
+              appLocalizations: appLocalizations,
+              onView: (patient) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          PatientDetailScreen(patient: patient))),
+              onEdit: (patient) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          PatientFormScreen(patient: patient))),
+              onDelete: (patient) =>
+                  _showDeleteConfirmationDialog(context, patient),
             ),
           ),
         ),
       ),
     );
-  
   }
   void _showDeleteConfirmationDialog(BuildContext context, Patient patient) {
     final appLocalizations = AppLocalizations.of(context)!;
@@ -336,4 +272,92 @@ class _PatientsScreenState extends State<PatientsScreen> {
         );
       },
     );}
+}
+
+class _PatientDataSource extends DataTableSource {
+  final List<Patient> patients;
+  final ThemeData theme;
+  final ColorScheme colorScheme;
+  final AppLocalizations appLocalizations;
+  final void Function(Patient) onView;
+  final void Function(Patient) onEdit;
+  final void Function(Patient) onDelete;
+
+  _PatientDataSource({
+    required this.patients,
+    required this.theme,
+    required this.colorScheme,
+    required this.appLocalizations,
+    required this.onView,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= patients.length) return null;
+    final patient = patients[index];
+    return DataRow.byIndex(
+      index: index,
+      color: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.selected)) {
+          return colorScheme.primary.withOpacity(0.15);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return colorScheme.primary.withOpacity(0.08);
+        }
+        return index.isEven
+            ? Colors.transparent
+            : colorScheme.surface.withAlpha(10);
+      }),
+      onSelectChanged: (isSelected) {
+        if (isSelected ?? false) {
+          onView(patient);
+        }
+      },
+      cells: [
+        DataCell(Text(patient.name, style: theme.textTheme.bodyMedium)),
+        DataCell(Text(patient.fileNumber, style: theme.textTheme.bodyMedium)),
+        DataCell(Text(patient.phone ?? appLocalizations.na,
+            style: theme.textTheme.bodyMedium)),
+        DataCell(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.visibility_outlined, size: 20),
+                tooltip: appLocalizations.viewPatient,
+                onPressed: () => onView(patient),
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.edit_outlined, size: 20),
+                tooltip: appLocalizations.editPatientTitle,
+                onPressed: () => onEdit(patient),
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.delete_outline, size: 20),
+                tooltip: appLocalizations.delete,
+                onPressed: () => onDelete(patient),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => patients.length;
+
+  @override
+  int get selectedRowCount => 0;
 }

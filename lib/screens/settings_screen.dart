@@ -376,49 +376,48 @@ class SettingsScreen extends StatelessWidget {
       BuildContext context, int patientCount, DataLanguage language) async {
     final appLocalizations = AppLocalizations.of(context)!;
 
-    // Show a progress dialog
-    showDialog(
+    // Show a progress dialog and wait for generation to finish
+    final result = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return _GeneratingProgressDialog(
           patientCount: patientCount,
           language: language,
-          onComplete: () async {
-            Navigator.pop(dialogContext);
-            // Reload all providers
-            await Future.wait([
-              Provider.of<PatientProvider>(context, listen: false)
-                  .fetchPatients(),
-              Provider.of<AppointmentProvider>(context, listen: false)
-                  .fetchAppointments(),
-              Provider.of<TreatmentProvider>(context, listen: false)
-                  .fetchTreatments(),
-              Provider.of<InvoiceProvider>(context, listen: false)
-                  .fetchInvoices(),
-              Provider.of<ExpenseProvider>(context, listen: false)
-                  .fetchExpenses(),
-            ]);
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                    content: Text(appLocalizations.testDataGenerated)),
-              );
-          },
-          onError: (error) {
-            Navigator.pop(dialogContext);
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                    content:
-                        Text('${appLocalizations.testDataError}: $error')),
-              );
-          },
         );
       },
     );
+
+    if (!context.mounted) return;
+
+    if (result == null || result == 'success') {
+      // Reload all providers sequentially
+      await Provider.of<PatientProvider>(context, listen: false)
+          .fetchPatients();
+      await Provider.of<AppointmentProvider>(context, listen: false)
+          .fetchAppointments();
+      await Provider.of<TreatmentProvider>(context, listen: false)
+          .fetchTreatments();
+      await Provider.of<InvoiceProvider>(context, listen: false)
+          .fetchInvoices();
+      await Provider.of<ExpenseProvider>(context, listen: false)
+          .fetchExpenses();
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(appLocalizations.testDataGenerated)),
+        );
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+              content:
+                  Text('${appLocalizations.testDataError}: $result')),
+        );
+    }
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) {
@@ -478,14 +477,10 @@ class SettingsScreen extends StatelessWidget {
 class _GeneratingProgressDialog extends StatefulWidget {
   final int patientCount;
   final DataLanguage language;
-  final VoidCallback onComplete;
-  final void Function(String error) onError;
 
   const _GeneratingProgressDialog({
     required this.patientCount,
     required this.language,
-    required this.onComplete,
-    required this.onError,
   });
 
   @override
@@ -518,11 +513,11 @@ class _GeneratingProgressDialogState
         },
       );
       if (mounted) {
-        widget.onComplete();
+        Navigator.pop(context, 'success');
       }
     } catch (e) {
       if (mounted) {
-        widget.onError(e.toString());
+        Navigator.pop(context, e.toString());
       }
     }
   }
