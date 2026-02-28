@@ -730,4 +730,47 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get paymentTransfer => 'تحويل';
+
+  @override
+  String get generateTestData => 'توليد بيانات تجريبية';
+
+  @override
+  String get generateTestDataSubtitle =>
+      'إنشاء مرضى ومواعيد وعلاجات وفواتير ومصاريف عشوائية للاختبار';
+
+  @override
+  String get numberOfPatients => 'عدد المرضى';
+
+  @override
+  String get dataLanguage => 'لغة البيانات';
+
+  @override
+  String get dataLanguageArabic => 'عربي';
+
+  @override
+  String get dataLanguageEnglish => 'إنجليزي';
+
+  @override
+  String get dataLanguageMixed => 'مختلط';
+
+  @override
+  String get generate => 'توليد';
+
+  @override
+  String get generating => 'جاري التوليد...';
+
+  @override
+  String get generatingTestData => 'جاري توليد البيانات التجريبية...';
+
+  @override
+  String get testDataGenerated => 'تم توليد البيانات التجريبية بنجاح!';
+
+  @override
+  String get testDataError => 'خطأ في توليد البيانات التجريبية';
+
+  @override
+  String get pleaseEnterNumberOfPatients => 'الرجاء إدخال عدد المرضى';
+
+  @override
+  String get pleaseEnterValidPositiveNumber => 'الرجاء إدخال رقم صحيح موجب';
 }

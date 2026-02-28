@@ -250,5 +250,19 @@
   "invoiceStatusFullyPaid": "مدفوعة بالكامل",
   "paymentCash": "نقدي",
   "paymentCard": "بطاقة",
-  "paymentTransfer": "تحويل"
+  "paymentTransfer": "تحويل",
+  "generateTestData": "توليد بيانات تجريبية",
+  "generateTestDataSubtitle": "إنشاء مرضى ومواعيد وعلاجات وفواتير ومصاريف عشوائية للاختبار",
+  "numberOfPatients": "عدد المرضى",
+  "dataLanguage": "لغة البيانات",
+  "dataLanguageArabic": "عربي",
+  "dataLanguageEnglish": "إنجليزي",
+  "dataLanguageMixed": "مختلط",
+  "generate": "توليد",
+  "generating": "جاري التوليد...",
+  "generatingTestData": "جاري توليد البيانات التجريبية...",
+  "testDataGenerated": "تم توليد البيانات التجريبية بنجاح!",
+  "testDataError": "خطأ في توليد البيانات التجريبية",
+  "pleaseEnterNumberOfPatients": "الرجاء إدخال عدد المرضى",
+  "pleaseEnterValidPositiveNumber": "الرجاء إدخال رقم صحيح موجب"
 }

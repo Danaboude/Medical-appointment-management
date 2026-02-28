@@ -250,5 +250,19 @@
   "invoiceStatusFullyPaid": "Fully Paid",
   "paymentCash": "Cash",
   "paymentCard": "Card",
-  "paymentTransfer": "Transfer"
+  "paymentTransfer": "Transfer",
+  "generateTestData": "Generate Test Data",
+  "generateTestDataSubtitle": "Create random patients, appointments, treatments, invoices, and expenses for testing",
+  "numberOfPatients": "Number of Patients",
+  "dataLanguage": "Data Language",
+  "dataLanguageArabic": "Arabic",
+  "dataLanguageEnglish": "English",
+  "dataLanguageMixed": "Mixed",
+  "generate": "Generate",
+  "generating": "Generating...",
+  "generatingTestData": "Generating test data...",
+  "testDataGenerated": "Test data generated successfully!",
+  "testDataError": "Error generating test data",
+  "pleaseEnterNumberOfPatients": "Please enter the number of patients",
+  "pleaseEnterValidPositiveNumber": "Please enter a valid positive number"
 }

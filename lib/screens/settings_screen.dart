@@ -14,6 +14,7 @@ import '../providers/patient_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/treatment_provider.dart';
 import '../services/database_service.dart';
+import '../services/random_data_generator.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -255,10 +256,168 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              _buildSectionTitle(context, appLocalizations.development),
+              const SizedBox(height: 8),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.auto_fix_high_outlined),
+                      title: Text(appLocalizations.generateTestData),
+                      subtitle:
+                          Text(appLocalizations.generateTestDataSubtitle),
+                      onTap: () => _showGenerateTestDataDialog(context),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showGenerateTestDataDialog(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context)!;
+    final patientCountController = TextEditingController(text: '20');
+    DataLanguage selectedLanguage = DataLanguage.mixed;
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(appLocalizations.generateTestData),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: patientCountController,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.numberOfPatients,
+                        border: const OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return appLocalizations.pleaseEnterNumberOfPatients;
+                        }
+                        final n = int.tryParse(value);
+                        if (n == null || n <= 0) {
+                          return appLocalizations
+                              .pleaseEnterValidPositiveNumber;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<DataLanguage>(
+                      value: selectedLanguage,
+                      decoration: InputDecoration(
+                        labelText: appLocalizations.dataLanguage,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: DataLanguage.arabic,
+                          child: Text(appLocalizations.dataLanguageArabic),
+                        ),
+                        DropdownMenuItem(
+                          value: DataLanguage.english,
+                          child: Text(appLocalizations.dataLanguageEnglish),
+                        ),
+                        DropdownMenuItem(
+                          value: DataLanguage.mixed,
+                          child: Text(appLocalizations.dataLanguageMixed),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedLanguage = value;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(appLocalizations.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      final count =
+                          int.parse(patientCountController.text);
+                      Navigator.pop(dialogContext);
+                      _generateTestData(context, count, selectedLanguage);
+                    }
+                  },
+                  child: Text(appLocalizations.generate),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _generateTestData(
+      BuildContext context, int patientCount, DataLanguage language) async {
+    final appLocalizations = AppLocalizations.of(context)!;
+
+    // Show a progress dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return _GeneratingProgressDialog(
+          patientCount: patientCount,
+          language: language,
+          onComplete: () async {
+            Navigator.pop(dialogContext);
+            // Reload all providers
+            await Future.wait([
+              Provider.of<PatientProvider>(context, listen: false)
+                  .fetchPatients(),
+              Provider.of<AppointmentProvider>(context, listen: false)
+                  .fetchAppointments(),
+              Provider.of<TreatmentProvider>(context, listen: false)
+                  .fetchTreatments(),
+              Provider.of<InvoiceProvider>(context, listen: false)
+                  .fetchInvoices(),
+              Provider.of<ExpenseProvider>(context, listen: false)
+                  .fetchExpenses(),
+            ]);
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                    content: Text(appLocalizations.testDataGenerated)),
+              );
+          },
+          onError: (error) {
+            Navigator.pop(dialogContext);
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                    content:
+                        Text('${appLocalizations.testDataError}: $error')),
+              );
+          },
+        );
+      },
     );
   }
 
@@ -312,6 +471,76 @@ class SettingsScreen extends StatelessWidget {
       onChanged: (bool value) {
         settingsProvider.toggleTheme(value);
       },
+    );
+  }
+}
+
+class _GeneratingProgressDialog extends StatefulWidget {
+  final int patientCount;
+  final DataLanguage language;
+  final VoidCallback onComplete;
+  final void Function(String error) onError;
+
+  const _GeneratingProgressDialog({
+    required this.patientCount,
+    required this.language,
+    required this.onComplete,
+    required this.onError,
+  });
+
+  @override
+  State<_GeneratingProgressDialog> createState() =>
+      _GeneratingProgressDialogState();
+}
+
+class _GeneratingProgressDialogState
+    extends State<_GeneratingProgressDialog> {
+  double _progress = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startGeneration();
+  }
+
+  Future<void> _startGeneration() async {
+    try {
+      final generator = RandomDataGenerator();
+      await generator.generate(
+        patientCount: widget.patientCount,
+        language: widget.language,
+        onProgress: (progress) {
+          if (mounted) {
+            setState(() {
+              _progress = progress;
+            });
+          }
+        },
+      );
+      if (mounted) {
+        widget.onComplete();
+      }
+    } catch (e) {
+      if (mounted) {
+        widget.onError(e.toString());
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context)!;
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(appLocalizations.generatingTestData),
+          const SizedBox(height: 24),
+          LinearProgressIndicator(value: _progress),
+          const SizedBox(height: 8),
+          Text('${(_progress * 100).toInt()}%'),
+        ],
+      ),
     );
   }
 }

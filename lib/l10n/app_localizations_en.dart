@@ -732,4 +732,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentTransfer => 'Transfer';
+
+  @override
+  String get generateTestData => 'Generate Test Data';
+
+  @override
+  String get generateTestDataSubtitle =>
+      'Create random patients, appointments, treatments, invoices, and expenses for testing';
+
+  @override
+  String get numberOfPatients => 'Number of Patients';
+
+  @override
+  String get dataLanguage => 'Data Language';
+
+  @override
+  String get dataLanguageArabic => 'Arabic';
+
+  @override
+  String get dataLanguageEnglish => 'English';
+
+  @override
+  String get dataLanguageMixed => 'Mixed';
+
+  @override
+  String get generate => 'Generate';
+
+  @override
+  String get generating => 'Generating...';
+
+  @override
+  String get generatingTestData => 'Generating test data...';
+
+  @override
+  String get testDataGenerated => 'Test data generated successfully!';
+
+  @override
+  String get testDataError => 'Error generating test data';
+
+  @override
+  String get pleaseEnterNumberOfPatients =>
+      'Please enter the number of patients';
+
+  @override
+  String get pleaseEnterValidPositiveNumber =>
+      'Please enter a valid positive number';
 }

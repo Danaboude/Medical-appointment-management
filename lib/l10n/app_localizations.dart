@@ -1519,6 +1519,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تحويل'**
   String get paymentTransfer;
+
+  /// No description provided for @generateTestData.
+  ///
+  /// In ar, this message translates to:
+  /// **'توليد بيانات تجريبية'**
+  String get generateTestData;
+
+  /// No description provided for @generateTestDataSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء مرضى ومواعيد وعلاجات وفواتير ومصاريف عشوائية للاختبار'**
+  String get generateTestDataSubtitle;
+
+  /// No description provided for @numberOfPatients.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد المرضى'**
+  String get numberOfPatients;
+
+  /// No description provided for @dataLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'لغة البيانات'**
+  String get dataLanguage;
+
+  /// No description provided for @dataLanguageArabic.
+  ///
+  /// In ar, this message translates to:
+  /// **'عربي'**
+  String get dataLanguageArabic;
+
+  /// No description provided for @dataLanguageEnglish.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنجليزي'**
+  String get dataLanguageEnglish;
+
+  /// No description provided for @dataLanguageMixed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مختلط'**
+  String get dataLanguageMixed;
+
+  /// No description provided for @generate.
+  ///
+  /// In ar, this message translates to:
+  /// **'توليد'**
+  String get generate;
+
+  /// No description provided for @generating.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاري التوليد...'**
+  String get generating;
+
+  /// No description provided for @generatingTestData.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاري توليد البيانات التجريبية...'**
+  String get generatingTestData;
+
+  /// No description provided for @testDataGenerated.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم توليد البيانات التجريبية بنجاح!'**
+  String get testDataGenerated;
+
+  /// No description provided for @testDataError.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطأ في توليد البيانات التجريبية'**
+  String get testDataError;
+
+  /// No description provided for @pleaseEnterNumberOfPatients.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرجاء إدخال عدد المرضى'**
+  String get pleaseEnterNumberOfPatients;
+
+  /// No description provided for @pleaseEnterValidPositiveNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرجاء إدخال رقم صحيح موجب'**
+  String get pleaseEnterValidPositiveNumber;
 }
 
 class _AppLocalizationsDelegate
