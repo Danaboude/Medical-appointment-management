@@ -845,4 +845,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get createNewPasswordAfterReset =>
       'App data has been reset. Please create a new password.';
+
+  @override
+  String get backupPasswordTitle => 'Backup Password';
+
+  @override
+  String get backupPasswordMessage =>
+      'This backup is encrypted. Enter the password that was used when it was created.';
+
+  @override
+  String get wrongBackupPassword => 'Wrong backup password. Please try again.';
 }

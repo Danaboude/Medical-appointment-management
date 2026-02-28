@@ -841,4 +841,15 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get createNewPasswordAfterReset =>
       'تم إعادة تعيين بيانات التطبيق. الرجاء إنشاء كلمة مرور جديدة.';
+
+  @override
+  String get backupPasswordTitle => 'كلمة مرور النسخة الاحتياطية';
+
+  @override
+  String get backupPasswordMessage =>
+      'هذه النسخة الاحتياطية مشفرة. أدخل كلمة المرور التي تم استخدامها عند إنشائها.';
+
+  @override
+  String get wrongBackupPassword =>
+      'كلمة مرور النسخة الاحتياطية خاطئة. يرجى المحاولة مرة أخرى.';
 }

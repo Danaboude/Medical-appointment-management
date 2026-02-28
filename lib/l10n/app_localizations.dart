@@ -1735,6 +1735,24 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم إعادة تعيين بيانات التطبيق. الرجاء إنشاء كلمة مرور جديدة.'**
   String get createNewPasswordAfterReset;
+
+  /// No description provided for @backupPasswordTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة مرور النسخة الاحتياطية'**
+  String get backupPasswordTitle;
+
+  /// No description provided for @backupPasswordMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذه النسخة الاحتياطية مشفرة. أدخل كلمة المرور التي تم استخدامها عند إنشائها.'**
+  String get backupPasswordMessage;
+
+  /// No description provided for @wrongBackupPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة مرور النسخة الاحتياطية خاطئة. يرجى المحاولة مرة أخرى.'**
+  String get wrongBackupPassword;
 }
 
 class _AppLocalizationsDelegate

@@ -286,5 +286,8 @@
   "passwordChanged": "Password changed successfully",
   "verifyPassword": "Verify Password",
   "verify": "Verify",
-  "createNewPasswordAfterReset": "App data has been reset. Please create a new password."
+  "createNewPasswordAfterReset": "App data has been reset. Please create a new password.",
+  "backupPasswordTitle": "Backup Password",
+  "backupPasswordMessage": "This backup is encrypted. Enter the password that was used when it was created.",
+  "wrongBackupPassword": "Wrong backup password. Please try again."
 }

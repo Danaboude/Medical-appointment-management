@@ -111,33 +111,114 @@ class SettingsScreen extends StatelessWidget {
 
     if (confirmed != true) return;
 
+    // Pick the backup file first (.clinc or legacy .zip)
+    final backupService = BackupService();
+    final zipFilePath = await backupService.pickBackupFile();
+    if (zipFilePath == null) return; // User canceled
+
+    // If encrypted, prompt for the backup password
+    String? backupPassword;
+    if (backupService.isBackupEncrypted(zipFilePath)) {
+      if (!context.mounted) return;
+      backupPassword = await _askBackupPassword(context);
+      if (backupPassword == null) return; // User canceled
+    }
+
+    if (!context.mounted) return;
+
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(appLocalizations.importingData)));
 
-    final backupService = BackupService();
-    final success = await backupService.importData();
+    try {
+      final success = await backupService.importData(
+        zipFilePath: zipFilePath,
+        password: backupPassword,
+      );
 
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    if (success) {
-      // Reload all data after import
-      await Future.wait([
-        Provider.of<PatientProvider>(context, listen: false).fetchPatients(),
-        Provider.of<AppointmentProvider>(context, listen: false)
-            .fetchAppointments(),
-        Provider.of<TreatmentProvider>(context, listen: false)
-            .fetchTreatments(),
-        Provider.of<InvoiceProvider>(context, listen: false).fetchInvoices(),
-        Provider.of<ExpenseProvider>(context, listen: false).fetchExpenses(),
-      ]);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(appLocalizations.restoreSuccessful)),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(appLocalizations.restoreFailed)),
-      );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      if (success) {
+        // Reload all data after import
+        await Future.wait([
+          Provider.of<PatientProvider>(context, listen: false).fetchPatients(),
+          Provider.of<AppointmentProvider>(context, listen: false)
+              .fetchAppointments(),
+          Provider.of<TreatmentProvider>(context, listen: false)
+              .fetchTreatments(),
+          Provider.of<InvoiceProvider>(context, listen: false).fetchInvoices(),
+          Provider.of<ExpenseProvider>(context, listen: false).fetchExpenses(),
+        ]);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appLocalizations.restoreSuccessful)),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appLocalizations.restoreFailed)),
+        );
+      }
+    } on WrongPasswordException {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(appLocalizations.wrongBackupPassword)),
+        );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('${appLocalizations.restoreFailed}: $e')),
+        );
     }
+  }
+
+  Future<String?> _askBackupPassword(BuildContext context) async {
+    final appLocalizations = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(appLocalizations.backupPasswordTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(appLocalizations.backupPasswordMessage),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              obscureText: true,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: appLocalizations.password,
+                border: const OutlineInputBorder(),
+              ),
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  Navigator.of(context).pop(value);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(appLocalizations.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
+                Navigator.of(context).pop(controller.text);
+              }
+            },
+            child: Text(appLocalizations.unlock),
+          ),
+        ],
+      ),
+    );
   }
 
   void _resetApp(BuildContext context) async {

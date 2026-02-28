@@ -13,6 +13,17 @@ class EncryptionService {
   /// Whether the encryption key is currently loaded in RAM.
   bool get hasKey => _keyBytes != null;
 
+  /// Returns a copy of the raw key bytes (32 bytes).
+  List<int>? get keyBytes =>
+      _keyBytes != null ? List<int>.from(_keyBytes!) : null;
+
+  /// Derives key bytes from a password without storing them.
+  /// Useful for verifying backup passwords independently.
+  static List<int> deriveKeyBytes(String password) {
+    final hash = crypto.sha256.convert(utf8.encode(password));
+    return List<int>.from(hash.bytes);
+  }
+
   /// Returns the key as a hex string for SQLCipher PRAGMA key.
   String? get keyHex {
     if (_keyBytes == null) return null;

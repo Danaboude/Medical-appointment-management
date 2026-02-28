@@ -8,6 +8,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive_io.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:crypto/crypto.dart' as crypto;
+import 'dart:typed_data';
 import 'encryption_service.dart';
 
 class DatabaseService {
@@ -387,6 +390,23 @@ class DatabaseService {
 class BackupService {
   final DatabaseService _databaseService = DatabaseService();
 
+  /// Pick a backup file (.clinc encrypted or .zip legacy). Returns path or null.
+  Future<String?> pickBackupFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['clinc', 'zip'],
+    );
+    if (result == null) return null;
+    return result.files.single.path;
+  }
+
+  /// Whether the backup file is an encrypted .clinc file.
+  bool isBackupEncrypted(String filePath) {
+    return filePath.toLowerCase().endsWith('.clinc');
+  }
+
+  /// Export all data as an AES-256-encrypted .clinc backup file.
+  /// The file is encrypted with the current app password's derived key.
   Future<String?> exportData() async {
     try {
       final db = await _databaseService.database;
@@ -433,25 +453,98 @@ class BackupService {
         }
       }
 
-      final zipFilePath = '${tempDir.path}/clinc_backup_${DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now())}.zip';
+      // Create a plain ZIP in temp first
+      final tempZipPath = '${tempDir.path}/temp_backup.zip';
       final encoder = ZipFileEncoder();
-      encoder.create(zipFilePath);
+      encoder.create(tempZipPath);
       await encoder.addDirectory(backupDir);
       encoder.close();
 
-      return zipFilePath;
+      // Encrypt the entire ZIP with AES-256-CBC
+      final encService = EncryptionService.instance;
+      if (!encService.hasKey) throw Exception('Encryption key not available');
+      final keyBytes = encService.keyBytes!;
+      final zipBytes = await File(tempZipPath).readAsBytes();
+
+      final key = enc.Key(Uint8List.fromList(keyBytes));
+      final iv = enc.IV.fromSecureRandom(16);
+      final encrypter = enc.Encrypter(
+          enc.AES(key, mode: enc.AESMode.cbc, padding: 'PKCS7'));
+      final encrypted = encrypter.encryptBytes(zipBytes.toList(), iv: iv);
+
+      // HMAC-SHA256 for quick password verification on import
+      final hmac = crypto.Hmac(crypto.sha256, keyBytes);
+      final hmacDigest = hmac.convert(utf8.encode('clinc-backup-verify'));
+
+      // File format: [16-byte IV] + [32-byte HMAC] + [AES ciphertext]
+      final outputBytes = Uint8List(16 + 32 + encrypted.bytes.length);
+      outputBytes.setRange(0, 16, iv.bytes);
+      outputBytes.setRange(16, 48, hmacDigest.bytes);
+      outputBytes.setRange(48, outputBytes.length, encrypted.bytes);
+
+      final outputPath =
+          '${tempDir.path}/clinc_backup_${DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now())}.clinc';
+      await File(outputPath).writeAsBytes(outputBytes);
+
+      // Clean up temp files
+      await File(tempZipPath).delete();
+      await backupDir.delete(recursive: true);
+
+      return outputPath;
     } catch (e) {
       print('Export failed: $e');
       return null;
     }
   }
 
-  Future<bool> importData() async {
+  /// Import data from a backup file.
+  /// [zipFilePath] is the path to the .clinc (encrypted) or .zip (legacy) file.
+  /// [password] is required for .clinc files to derive the decryption key.
+  Future<bool> importData(
+      {required String zipFilePath, String? password}) async {
     try {
-      final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['zip']);
-      if (result == null) return false; // User canceled picker
+      final file = File(zipFilePath);
+      List<int> zipBytes;
 
-      final zipFile = File(result.files.single.path!);
+      if (isBackupEncrypted(zipFilePath)) {
+        // --- Encrypted .clinc backup ---
+        if (password == null || password.isEmpty) {
+          throw WrongPasswordException();
+        }
+
+        final fileBytes = await file.readAsBytes();
+        if (fileBytes.length < 48) {
+          throw Exception('Invalid backup file');
+        }
+
+        // Parse: [16 IV] + [32 HMAC] + [ciphertext]
+        final iv = enc.IV(Uint8List.fromList(fileBytes.sublist(0, 16)));
+        final storedHmac = fileBytes.sublist(16, 48);
+        final cipherBytes = fileBytes.sublist(48);
+
+        // Derive key from the provided password
+        final keyBytes = EncryptionService.deriveKeyBytes(password);
+
+        // Verify password via HMAC
+        final hmac = crypto.Hmac(crypto.sha256, keyBytes);
+        final computedHmac =
+            hmac.convert(utf8.encode('clinc-backup-verify'));
+        if (!_constantTimeEquals(computedHmac.bytes, storedHmac)) {
+          throw WrongPasswordException();
+        }
+
+        // Decrypt to get original ZIP bytes
+        final key = enc.Key(Uint8List.fromList(keyBytes));
+        final encrypter = enc.Encrypter(
+            enc.AES(key, mode: enc.AESMode.cbc, padding: 'PKCS7'));
+        zipBytes = encrypter.decryptBytes(
+            enc.Encrypted(Uint8List.fromList(cipherBytes)),
+            iv: iv);
+      } else {
+        // --- Legacy plain .zip backup ---
+        zipBytes = await file.readAsBytes();
+      }
+
       final tempDir = await getTemporaryDirectory();
       final importDir = Directory('${tempDir.path}/import');
       if (await importDir.exists()) {
@@ -459,12 +552,12 @@ class BackupService {
       }
       await importDir.create();
 
-      final archive = ZipDecoder().decodeBytes(zipFile.readAsBytesSync());
-      for (final file in archive) {
-        final filename = file.name;
+      final archive = ZipDecoder().decodeBytes(zipBytes);
+      for (final archiveFile in archive) {
+        final filename = archiveFile.name;
         final path = '${importDir.path}/$filename';
-        if (file.isFile) {
-          final data = file.content as List<int>;
+        if (archiveFile.isFile) {
+          final data = archiveFile.content as List<int>;
           File(path)
             ..createSync(recursive: true)
             ..writeAsBytesSync(data);
@@ -500,7 +593,8 @@ class BackupService {
         await newImagesDir.create(recursive: true);
       }
 
-      List<Map<String, dynamic>> patients = List<Map<String, dynamic>>.from(allData['Patients'] ?? []);
+      List<Map<String, dynamic>> patients =
+          List<Map<String, dynamic>>.from(allData['Patients'] ?? []);
       for (var i = 0; i < patients.length; i++) {
         var patient = patients[i];
         final oldImagePath = patient['xray_image'];
@@ -520,7 +614,8 @@ class BackupService {
       final batch = db.batch();
 
       for (var table in tables) {
-        List<Map<String, dynamic>> tableData = List<Map<String, dynamic>>.from(allData[table] ?? []);
+        List<Map<String, dynamic>> tableData =
+            List<Map<String, dynamic>>.from(allData[table] ?? []);
         for (var row in tableData) {
           batch.insert(table, row, conflictAlgorithm: ConflictAlgorithm.replace);
         }
@@ -530,9 +625,27 @@ class BackupService {
       await db.execute('PRAGMA foreign_keys = ON');
 
       return true;
+    } on WrongPasswordException {
+      rethrow;
     } catch (e) {
       print('Import failed: $e');
       return false;
     }
   }
+
+  /// Constant-time comparison to prevent timing attacks on HMAC.
+  bool _constantTimeEquals(List<int> a, List<int> b) {
+    if (a.length != b.length) return false;
+    var result = 0;
+    for (var i = 0; i < a.length; i++) {
+      result |= a[i] ^ b[i];
+    }
+    return result == 0;
+  }
+}
+
+/// Thrown when the wrong password is provided for an encrypted backup.
+class WrongPasswordException implements Exception {
+  @override
+  String toString() => 'Wrong password for encrypted backup';
 }
